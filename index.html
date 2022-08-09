@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.1/p5.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.1/addons/p5.sound.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="style.css">
+    <meta charset="utf-8" />
+
+  </head>
+  <body>
+    <div id="originalVideo"></div>
+    <div class="wrapper">
+      <div id="asciiCanvas">
+      </div>
+      <div id="dcDiv">Video Paused</div>
+    </div>
+    
+    <div class="wrapper2">
+      <span>Density</span>
+      <input type="range" min="10" max="200" value="100" step="1" id="densitySlider" oninput="changeDensity();">
+      
+      <br><br>      
+      
+      <span>Output Width</span>
+      <input type="range" min="10" max="1920" value="100" step="1" id="widthSlider" oninput="changeWidth();">
+      
+      <br><br>
+      
+      <span>Walk</span>
+      &nbsp<input type="checkbox" onchange="walk=!walk">
+      
+      <br><br>
+      
+      <span>Colorize</span>
+      &nbsp<input type="checkbox" onchange="colorize=!colorize">
+      
+      <br><br>
+      
+      <span>Camera Mode</span>
+      <input type="radio" name="cameraMode" onclick="cameraMode=false" checked>
+      <label for="html">Back</label>
+      <input type="radio" name="cameraMode" onclick="cameraMode=true">
+      <label for="html">Front</label>
+    </div>
+    <main>
+    </main>
+    <script src="P5js/ascii_hybrid/asciiHybrid.js"></script>
+  </body>
+</html>
