@@ -1,11 +1,41 @@
 <!DOCTYPE html>
-<html>
-<head>
-	<meta charset="utf-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<title>WOYO</title>
-</head>
-<body>
-	Testing
-</body>
+<html lang="en">
+  <head>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.1/p5.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.1/addons/p5.sound.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="style.css">
+    <meta charset="utf-8" />
+
+  </head>
+  <body>
+    <div class="wrapper">
+      <div id="originalVideo"></div>
+      <div id="asciiCanvas">
+      </div>
+      <div id="dcDiv">No Connection</div>
+    </div>
+    
+    <div class="wrapper2">
+      <span>Density</span>
+      <input type="range" min="10" max="200" value="100" step="1" id="densitySlider" oninput="changeDensity();">
+      <br><br>      
+      <span>Output Width</span>
+      <input type="range" min="10" max="1920" value="100" step="1" id="widthSlider" oninput="changeWidth();">
+      <br><br>
+      <span>Walk</span>
+      <input type="radio" name="walk" onclick="walk=true" checked>
+      <label for="html">Yes</label>
+      <input type="radio" name="walk" onclick="walk=false">
+      <label for="html">No</label>
+      <br><br>
+      <span>Camera Mode</span>
+      <input type="radio" name="cameraMode" onclick="cameraMode=true" checked>
+      <label for="html">Front</label>
+      <input type="radio" name="cameraMode" onclick="cameraMode=false">
+      <label for="html">Back</label>
+    </div>
+    <main>
+    </main>
+    <script src="P5js/asciiHybrid.js"></script>
+  </body>
 </html>
