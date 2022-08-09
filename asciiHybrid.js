@@ -10,77 +10,73 @@ let cameraMode = true;
 let colorize = false;
 
 function preload() {
-  img = loadImage('date.jpg');
-  // video = createVideo('P5js/bird.mp4', initialize);
+  video = createVideo('P5js/bird.mp4', initialize);
 }
 
 function setup() {
   noCanvas();
-  createCanvas(windowWidth, windowHeight);
 }
 
 function draw() {
-  background(0);
-  image(img, 0, 0);
-  // if (!video.loadedmetadata) return;
-  // video.loadPixels();
-  // let samePixels = 0;
+  if (!video.loadedmetadata) return;
+  video.loadPixels();
+  let samePixels = 0;
   
-  // let isSavingTime = false
-  // if (second() % 2 === 0 && savedFrameTime !== second()) {
-  //   savedFrameTime = second();
-  //   isSavingTime = true;
-  // }
+  let isSavingTime = false
+  if (second() % 2 === 0 && savedFrameTime !== second()) {
+    savedFrameTime = second();
+    isSavingTime = true;
+  }
   
-  // let asciiImage = '';
-  // for (let y = 0; y < video.height; y++) {
-  //   for (let x = 
-  //        (cameraMode) ? 0 : video.width-1; 
-  //        (cameraMode) ? x < video.width : x >= 0; 
-  //        (cameraMode) ? x++ : x--) {
-  //     const pixIndex = (x + y * video.width) * 4;
-  //     const r = video.pixels[pixIndex];
-  //     const g = video.pixels[pixIndex+1];
-  //     const b = video.pixels[pixIndex+2];
+  let asciiImage = '';
+  for (let y = 0; y < video.height; y++) {
+    for (let x = 
+         (cameraMode) ? 0 : video.width-1; 
+         (cameraMode) ? x < video.width : x >= 0; 
+         (cameraMode) ? x++ : x--) {
+      const pixIndex = (x + y * video.width) * 4;
+      const r = video.pixels[pixIndex];
+      const g = video.pixels[pixIndex+1];
+      const b = video.pixels[pixIndex+2];
       
-  //     if (savedFrame.pixels[pixIndex] === r &&
-  //         savedFrame.pixels[pixIndex+1] === g &&
-  //         savedFrame.pixels[pixIndex+2] === b) samePixels++;
+      if (savedFrame.pixels[pixIndex] === r &&
+          savedFrame.pixels[pixIndex+1] === g &&
+          savedFrame.pixels[pixIndex+2] === b) samePixels++;
       
-  //     if (!isStopped && isSavingTime) {
-  //       savedFrame.pixels[pixIndex] = r;
-  //       savedFrame.pixels[pixIndex+1] = g;
-  //       savedFrame.pixels[pixIndex+2] = b;
-  //     }
+      if (!isStopped && isSavingTime) {
+        savedFrame.pixels[pixIndex] = r;
+        savedFrame.pixels[pixIndex+1] = g;
+        savedFrame.pixels[pixIndex+2] = b;
+      }
       
-  //     const avg = (r+g+b) /3;
-  //     const charIndex = map(avg, 0, 255, chars.length, 0);
-  //     let c = chars.charAt((!walk) ? charIndex : (charIndex + counter/4) % chars.length);
-  //     if (c === ' ') c = '&nbsp';
-  //     asciiImage += (!colorize) ? c : `<span style="color: rgb(${r},${g},${b}, 1)">${c}</span>`;
-  //   }
-  //   asciiImage += '<br>';
-  // }
+      const avg = (r+g+b) /3;
+      const charIndex = map(avg, 0, 255, chars.length, 0);
+      let c = chars.charAt((!walk) ? charIndex : (charIndex + counter/4) % chars.length);
+      if (c === ' ') c = '&nbsp';
+      asciiImage += (!colorize) ? c : `<span style="color: rgb(${r},${g},${b}, 1)">${c}</span>`;
+    }
+    asciiImage += '<br>';
+  }
   
-  // asciiCanvas.innerHTML = asciiImage;
+  asciiCanvas.innerHTML = asciiImage;
   
-  // let allow = 0;
-  // (samePixels === video.width * video.height) ? allow++ : allow--;
-  // (!isStopped) ? allow++ : allow--;
-  // switch (allow) {
-  //   case 2:
-  //     isStopped = true;
-  //     asciiCanvas.style.opacity = 0.4;
-  //     dcDiv.style.opacity = 1;
-  //     break;
-  //   case -2:
-  //     isStopped = false;
-  //     asciiCanvas.style.opacity = 1;
-  //     dcDiv.style.opacity = 0;
-  //     break;
-  // }
+  let allow = 0;
+  (samePixels === video.width * video.height) ? allow++ : allow--;
+  (!isStopped) ? allow++ : allow--;
+  switch (allow) {
+    case 2:
+      isStopped = true;
+      asciiCanvas.style.opacity = 0.4;
+      dcDiv.style.opacity = 1;
+      break;
+    case -2:
+      isStopped = false;
+      asciiCanvas.style.opacity = 1;
+      dcDiv.style.opacity = 0;
+      break;
+  }
   
-  // if (!isStopped) counter++;
+  if (!isStopped) counter++;
 }
 
 function initialize() {
