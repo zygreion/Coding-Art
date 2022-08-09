@@ -83,7 +83,7 @@ function initialize() {
   densitySlider.value = '100';
   widthSlider.value = '960';
   init_vw = video.width; init_vh = video.height;
-  video.play(); video.loop(); video.volume(0);
+  video.volume(0); video.play(); video.loop();
   video.parent(originalVideo);
   changeWidth(); changeDensity();
   // video.hide();
