@@ -10,7 +10,7 @@ let cameraMode = true;
 let colorize = false;
 
 function preload() {
-  video = createVideo('P5js/bird.mp4', initialize);
+  video = createVideo('bird.mp4', initialize);
 }
 
 function setup() {
