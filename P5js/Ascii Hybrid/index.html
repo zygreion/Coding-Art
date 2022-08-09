@@ -8,31 +8,39 @@
 
   </head>
   <body>
+    <div id="originalVideo"></div>
     <div class="wrapper">
-      <div id="originalVideo"></div>
       <div id="asciiCanvas">
       </div>
-      <div id="dcDiv">No Connection</div>
+      <div id="dcDiv">Video Paused</div>
     </div>
     
     <div class="wrapper2">
       <span>Density</span>
       <input type="range" min="10" max="200" value="100" step="1" id="densitySlider" oninput="changeDensity();">
+      
       <br><br>      
+      
       <span>Output Width</span>
       <input type="range" min="10" max="1920" value="100" step="1" id="widthSlider" oninput="changeWidth();">
+      
       <br><br>
+      
       <span>Walk</span>
-      <input type="radio" name="walk" onclick="walk=true" checked>
-      <label for="html">Yes</label>
-      <input type="radio" name="walk" onclick="walk=false">
-      <label for="html">No</label>
+      &nbsp<input type="checkbox" onchange="walk=!walk">
+      
       <br><br>
+      
+      <span>Colorize</span>
+      &nbsp<input type="checkbox" onchange="colorize=!colorize">
+      
+      <br><br>
+      
       <span>Camera Mode</span>
-      <input type="radio" name="cameraMode" onclick="cameraMode=true" checked>
-      <label for="html">Front</label>
-      <input type="radio" name="cameraMode" onclick="cameraMode=false">
+      <input type="radio" name="cameraMode" onclick="cameraMode=false" checked>
       <label for="html">Back</label>
+      <input type="radio" name="cameraMode" onclick="cameraMode=true">
+      <label for="html">Front</label>
     </div>
     <main>
     </main>
