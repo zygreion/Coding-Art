@@ -24,9 +24,9 @@ function preload() {
 
 function draw() {
   if (!video.loadedmetadata) return;
-  if (initialized && typeof(c) === 'undefined') {
-    c = createCanvas(video.width, video.height);
-    c.parent(originalVideo);
+  if (initialized) {
+    if (typeof(c) === 'undefined') (c = createCanvas(video.width, video.height), c.parent(originalVideo));
+    else resizeCanvas(video.width, video.height);
   }
   image(video, 0,0, c.width, c.height);
   video.loadPixels();
