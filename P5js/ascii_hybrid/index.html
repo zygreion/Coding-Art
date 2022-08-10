@@ -8,7 +8,7 @@
 
   </head>
   <body>
-    <div id="originalVideo"></div>
+    <div id="videoDisplay"></div>
     <div class="wrapper">
       <div id="asciiCanvas">
       </div>
@@ -16,6 +16,14 @@
     </div>
     
     <div class="wrapper2">
+      <input class="" type="file" accept="video/*" id="fileInput" onchange="if (this.files.length >= 1) inputLoad(this.files[0])">
+      
+      <br><br>
+      
+      <button id="webcamButton" class="" onclick="if (type !== 'camera') inputLoad('camera')">Use Webcam</button>
+      
+      <br><br>
+      
       <span>Density</span>
       <input type="range" min="10" max="200" value="100" step="1" id="densitySlider" oninput="changeDensity();">
       
@@ -26,15 +34,18 @@
       
       <br><br>
       
-      <span>Walk</span>
-      &nbsp<input type="checkbox" onchange="walk=!walk">
+      <div>
+        <div style="display: inline-block;">
+          <span>Walk</span><br>
+          <input type="checkbox" onchange="walk=!walk" style="margin-left: 12px;">
+        </div>
+        <div style="display: inline-block;">
+          <span>Colorize</span><br>
+          <input type="checkbox" onchange="colorize=!colorize" style="margin-left: 30px;">
+        </div>
+      </div>
       
-      <br><br>
-      
-      <span>Colorize</span>
-      &nbsp<input type="checkbox" onchange="colorize=!colorize">
-      
-      <br><br>
+      <br>
       
       <span>Camera Mode</span>
       <input type="radio" name="cameraMode" onclick="cameraMode=false" checked>
@@ -44,6 +55,6 @@
     </div>
     <main>
     </main>
-    <script src="asciiHybrid.js"></script>
+    <script src="sketch.js"></script>
   </body>
 </html>

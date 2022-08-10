@@ -39,7 +39,15 @@ html, body {
   transition: opacity 0.5s ease-in 0.25s, opacity 0.5s ease-out 1s;
 }
 
-#originalVideo {
+.fileInputActive {
+  color: lime;
+}
+
+.webcamButtonActive {
+  background-color: lime;
+}
+
+#videoDisplay {
   display: flex;
   position: absolute;
   bottom: 0;
@@ -63,3 +71,10 @@ html, body {
 .wrapper2 > div > span {
 /*   display: block; */
 }
+
+/* #fileInput::file-selector-button {
+  background-image: linear-gradient(0deg, #707070 -50%, #FCFCFC 110.00000000000001%);
+}
+#fileInput::file-selector-button:hover {
+  background-image: linear-gradient(0deg, #555555 -50%, #FCFCFC 110.00000000000001%);
+} */
