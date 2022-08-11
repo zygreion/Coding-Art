@@ -177,6 +177,6 @@ function changeFontSize() {
   asciiCanvas.style.fontSize = 16 * int(widthSlider.value)/1320 * 100/int(densitySlider.value) + 'px';
 }
 
-function mouseMoved() {
-  if (video && video.volume() === 0) video.volume(1);
+function mouseClicked() {
+  if (!video.elt.paused && video.volume() === 0) video.volume(1);
 }
