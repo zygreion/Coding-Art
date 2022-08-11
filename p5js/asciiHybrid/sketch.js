@@ -176,3 +176,7 @@ function changeFontSize() {
   // the asciiCanvas fontSize is 16px
   asciiCanvas.style.fontSize = 16 * int(widthSlider.value)/1320 * 100/int(densitySlider.value) + 'px';
 }
+
+function mouseMoved() {
+  if (video && video.volume() === 0) video.volume(1);
+}
