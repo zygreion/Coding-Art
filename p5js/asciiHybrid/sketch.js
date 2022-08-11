@@ -1,4 +1,4 @@
-const chars = 'Ñ@#W$9876543210?!abc;:+=-,._                    ';
+let chars = 'Ñ@#W$9876543210?!abc;:+=-,._                    ';
 let savedFrameTime = 0;
 let isStopped = false;
 let counter = 0;
@@ -18,10 +18,10 @@ function preload() {
   
   densitySlider.value = '100';
   widthSlider.value = window.innerWidth * 3/4;
-  widthSlider.max = window.outerWidth;
+  widthSlider.max = window.outerWidth-40;
 }
 
-function draw() {
+function draw() {  
   if (!video) return;
   if (type !== 'image' && !video.loadedmetadata) return;
   if (initializeEnd) {
@@ -31,6 +31,7 @@ function draw() {
       initializeEnd = false;
     }
   }
+
   if (c.width !== 56 * init_vw / init_vh || c.height !== 56) c.resize(56 * init_vw / init_vh, 56);
   
   if (type === 'image') c.drawingContext.drawImage(vidRef, 0, 0, c.width, c.height);
@@ -67,26 +68,29 @@ function draw() {
         savedFrame.pixels[pixIndex+2] = b;
       }
       
-      const avg = (r+g+b) /3;
-      const charIndex = map(avg, 0, 255, chars.length, 0);
-      let c = chars.charAt((!walk) ? charIndex : (charIndex + counter/6) % chars.length);
-      if (c === ' ') (c = (!colorize) ? '&nbsp' : '^');
-      if (!colorize) asciiImage += c;
-      else {
+      if (isStopped) return;
+      const avg = (r+g+b) / 3;
+      const charIndex = map(avg, 0, 255, chars.length-1, 0);
+      let c = chars.charAt((!walk) ? charIndex : int(charIndex + counter/6) % chars.length);
+      if (c === ' ') (c = (!colorize) ? '&nbsp' : "^");
+      if (colorize) {
+        if (avg <= 3) c = '&nbsp';
         if (lastAvg !== avg) {
           if (x > 0) asciiImage += '</span>';
-          asciiImage += `<span style="color: rgb(${r},${g},${b})">${c}`;
-        } else {
-          asciiImage += c;
+          if (avg > 3) asciiImage += `<span style="color: rgb(${r},${g},${b})">`;
+          else asciiImage += '<span>';
         }
-        // asciiImage += `<span style="color: rgb(${r},${g},${b})">${c}</span>`;
       }
+      asciiImage += c;
+      
       lastAvg = avg;
     }
     asciiImage += '<br>';
   }
   
   if (!isStopped) {
+    if (colorize && asciiCanvas.style.color === '#fff') asciiCanvas.style.color = '#000';
+    if (!colorize && asciiCanvas.style.color === '#000') asciiCanvas.style.color = '#fff';
     asciiCanvas.innerHTML = asciiImage; 
     counter++;
   }
@@ -94,7 +98,7 @@ function draw() {
   if (type === 'image') return;
   let allow = 0;
   (samePixels === video.width * video.height) ? allow++ : allow--;
-  (!isStopped) ? allow++ : allow--;
+  (video.elt.paused && !isStopped) ? allow++ : allow--;
   switch (allow) {
     case 2:
       isStopped = true;
@@ -102,6 +106,7 @@ function draw() {
       dcDiv.style.opacity = 1;
       break;
     case -2:
+      if (!isStopped) return;
       isStopped = false;
       asciiCanvas.style.opacity = 1;
       dcDiv.style.opacity = 0;
@@ -110,54 +115,44 @@ function draw() {
 }
 
 function inputLoad(param) {
-  let t = (param !== 'camera') ? param.type.slice(0, 5) : param;
-  if (t !== 'video' && t !== 'camera' && t !== 'image') {
-    fileInput.classList.remove('fileInputActive');
-    return;
-  }
+  let t; 
+  t = (param === 'camera') ? param : t = param.type.slice(0, 5);
+  
+  if (t === '') return;
   
   let lastType = type;
   type = t;
-  let blob = (param !== 'camera') ? URL.createObjectURL(param) : (0);
   
-  (type === 'camera') ? 
-    ((lastType !== type) ? 
-       (fileInput.value = '', 
-       webcamButton.classList.add('webcamButtonActive'), 
-       fileInput.classList.remove('fileInputActive'), 
-       video = createCapture(VIDEO, initialize)) : (0)) :
-    ((type === 'video' || type === 'image') ? 
-      (fileInput.classList.add('fileInputActive'),
-      webcamButton.classList.remove('webcamButtonActive'),
-      (type === 'video') ? 
-       video = createVideo(blob, initialize) : 
-       (video = loadImage(blob, initialize), 
-        vidRef = new Image(), 
-        vidRef.src = blob)) : (0)
-    );
-  
-  // if (type === 'camera') {
-  //   if (lastType === type) return;
-  //   fileInput.value = '';
-  //   webcamButton.classList.add('webcamButtonActive');
-  //   fileInput.classList.remove('fileInputActive');
-  //   video = createCapture(VIDEO, initialize);
-  // } else if (type === 'video' || type === 'image') {
-  //   fileInput.classList.add('fileInputActive');
-  //   webcamButton.classList.remove('webcamButtonActive');
-  //   (type === 'video') ? video = createVideo(blob, initialize) : 
-  //     (video = loadImage(blob, initialize), vidRef = new Image(), vidRef.src = blob);
-  // }
+  let blob = (type !== 'camera') ? URL.createObjectURL(param) : (0);
+
+  if (type === 'camera') {
+    if (lastType === type) return;
+    fileInput.value = '';
+    video = createCapture(VIDEO, initialize);
+  } else if (type === 'video' || type === 'image') {
+    (type === 'video') ? video = createVideo(blob, initialize) : 
+      (video = loadImage(blob, initialize), vidRef = new Image(), vidRef.src = blob);
+  }
 }
 
 function initialize() {
   initializeEnd = false;
   counter = 0;
+  
   if (type === 'video' || type === 'camera') 
-    (video.hide(), video.volume(0), video.play(), video.loop())
+    (video.hide(), (frameCount === 0) ? video.volume(0) : video.volume(1), video.play(), video.loop())
   init_vw = video.width; init_vh = video.height;
   changeWidth(); changeDensity();
   initializeEnd = true;
+  
+  if (frameCount === 0) return;
+  if (type === 'camera') {
+    fileInput.classList.remove('fileInputActive');
+    webcamButton.classList.add('webcamButtonActive');
+  } else if (type === 'video' || type === 'image') {
+    webcamButton.classList.remove('webcamButtonActive');
+    fileInput.classList.add('fileInputActive');
+  }
 }
 
 function changeWidth() {
@@ -167,7 +162,9 @@ function changeWidth() {
 function changeDensity() {
   let newW = int(densitySlider.value);
   let newH = int(newW / init_vw * init_vh);
-  (type === 'video' || type === 'camera') ? video.size(newW, newH) : (video = loadImage(vidRef.src, () => video.resize(newW, newH)));
+  (type === 'video' || type === 'camera') ? 
+    video.size(newW, newH) : 
+    (video = loadImage(vidRef.src, () => video.resize(newW, newH)));
   savedFrame = createImage(newW, newH);
   changeFontSize();
 }
@@ -176,4 +173,8 @@ function changeFontSize() {
   // at widthSlider.value === 100, 
   // the asciiCanvas fontSize is 16px
   asciiCanvas.style.fontSize = 16 * int(widthSlider.value)/1320 * 100/int(densitySlider.value) + 'px';
+}
+
+function fullscreenchanged(event) {
+  print(event)
 }
