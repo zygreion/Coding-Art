@@ -115,6 +115,7 @@ function draw() {
 }
 
 function inputLoad(param) {
+  if (video) video.volume(0);
   let t; 
   t = (param === 'camera') ? param : t = param.type.slice(0, 5);
   
@@ -140,11 +141,12 @@ function initialize() {
   counter = 0;
   
   if (type === 'video' || type === 'camera') 
-    (video.hide(), (frameCount === 0) ? video.volume(0) : video.volume(1), video.play(), video.loop())
+    (video.hide(), video.volume(0), video.play(), video.loop())
   init_vw = video.width; init_vh = video.height;
   changeWidth(); changeDensity();
   initializeEnd = true;
   
+  if (video.volume() === 0) video.volume(1);
   if (frameCount === 0) return;
   if (type === 'camera') {
     fileInput.classList.remove('fileInputActive');
