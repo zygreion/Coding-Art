@@ -25,12 +25,12 @@
       <br><br>
       
       <span>Density</span>
-      <input type="range" min="10" max="200" value="100" step="1" id="densitySlider" oninput="changeDensity();">
+      <input type="range" min="10" max="220" value="100" step="1" id="densitySlider" oninput="changeDensity();">
       
       <br><br>      
       
       <span>Output Width</span>
-      <input type="range" min="10" max="1920" value="100" step="1" id="widthSlider" oninput="changeWidth();">
+      <input type="range" min="10" max="1920" value="100" step="1" id="widthSlider" oninput="changeWidth()">
       
       <br><br>
       
@@ -40,9 +40,14 @@
           <input type="checkbox" onchange="walk=!walk" style="margin-left: 35%;">
         </div>
         
-        <div style="display: inline-block; position: absolute; left: 50%; transform: translate(-50%, 0);">
+        <div style="display: inline-block; margin-left: 10px;">
           <span>Colorize</span><br>
           <input type="checkbox" onchange="colorize=!colorize;" style="margin-left: 40%;">
+        </div>
+
+        <div style="display: inline-block; margin-left: 10px;">
+          <span>Flip</span><br>
+          <input type="checkbox" onchange="flipChars=!flipChars;" style="margin-left: 40%;">
         </div>
 
       </div>
@@ -55,7 +60,6 @@
       <input type="radio" name="cameraMode" onclick="cameraMode=true">
       <label for="html">Front</label>
     </div>
-    <div id="videoDisplay"></div>
     <main>
     </main>
     <script src="sketch.js"></script>
