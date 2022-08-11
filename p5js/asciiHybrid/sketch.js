@@ -10,6 +10,8 @@ let walk = false;
 let cameraMode = false;
 let colorize = false;
 
+let whatthefuck;
+
 let video, vidRef, c, type, lastAvg;
 
 function preload() {
@@ -27,6 +29,7 @@ function draw() {
   if (initializeEnd) {
     if (typeof(c) === 'undefined') {
       c = createCanvas(int(56 * init_vw / init_vh), 56);
+      c.background('red')
       c.parent(videoDisplay);
       initializeEnd = false;
     }
@@ -115,13 +118,14 @@ function draw() {
 }
 
 function inputLoad(param) {
-  let t; 
+  if (video.elt.volume > 0) video.elt.pause();
+  let t;
   t = (param === 'camera') ? param : t = param.type.slice(0, 5);
   
   if (t === '') return;
   
   let lastType = type;
-  type = t;
+  type = t; 
   
   let blob = (type !== 'camera') ? URL.createObjectURL(param) : (0);
 
@@ -138,9 +142,10 @@ function inputLoad(param) {
 function initialize() {
   initializeEnd = false;
   counter = 0;
+  whatthefuck = true;
   
   if (type === 'video' || type === 'camera') 
-    (video.hide(), video.volume(0), video.loop())
+    (video.hide(), video.volume(0))
   init_vw = video.width; init_vh = video.height;
   changeWidth(); changeDensity();
   initializeEnd = true;
@@ -176,5 +181,5 @@ function changeFontSize() {
 }
 
 function mouseMoved() {
-  if (video.elt.paused && video.elt.volume === 0) (video.elt.volume = 1, video.elt.play());
+  if (whatthefuck) (video.elt.volume = 1, video.elt.loop = true, video.elt.play())
 }
