@@ -146,7 +146,6 @@ function initialize() {
   changeWidth(); changeDensity();
   initializeEnd = true;
   
-  if (video.volume() === 0) video.volume(1);
   if (frameCount === 0) return;
   if (type === 'camera') {
     fileInput.classList.remove('fileInputActive');
@@ -177,6 +176,6 @@ function changeFontSize() {
   asciiCanvas.style.fontSize = 16 * int(widthSlider.value)/1320 * 100/int(densitySlider.value) + 'px';
 }
 
-function mouseClicked() {
-  if (!video.elt.paused && video.volume() === 0) video.volume(1);
+function mouseMoved() {
+  if (video && video.volume() === 0) video.volume(1);
 }
