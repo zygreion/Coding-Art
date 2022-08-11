@@ -10,7 +10,7 @@ let walk = false;
 let cameraMode = false;
 let colorize = false;
 
-let whatthefuck;
+let whack = true;
 
 let video, vidRef, c, type, lastAvg;
 
@@ -142,22 +142,24 @@ function inputLoad(param) {
 function initialize() {
   initializeEnd = false;
   counter = 0;
-  whatthefuck = true;
   
   if (type === 'video' || type === 'camera') 
-    (video.hide(), video.volume(0))
+    (video.hide(), (whack) ? video.elt.volume = 0 : video.elt.volume = 1, video.elt.loop = true, video.elt.play())
   init_vw = video.width; init_vh = video.height;
   changeWidth(); changeDensity();
   initializeEnd = true;
   
-  if (frameCount === 0) return;
-  if (type === 'camera') {
-    fileInput.classList.remove('fileInputActive');
-    webcamButton.classList.add('webcamButtonActive');
-  } else if (type === 'video' || type === 'image') {
-    webcamButton.classList.remove('webcamButtonActive');
-    fileInput.classList.add('fileInputActive');
+  if (whack) whack = false
+  else {
+    if (type === 'camera') {
+      fileInput.classList.remove('fileInputActive');
+      webcamButton.classList.add('webcamButtonActive');
+    } else if (type === 'video' || type === 'image') {
+      webcamButton.classList.remove('webcamButtonActive');
+      fileInput.classList.add('fileInputActive');
+    }
   }
+  
 }
 
 function changeWidth() {
@@ -178,8 +180,4 @@ function changeFontSize() {
   // at widthSlider.value === 100, 
   // the asciiCanvas fontSize is 16px
   asciiCanvas.style.fontSize = 16 * int(widthSlider.value)/1320 * 100/int(densitySlider.value) + 'px';
-}
-
-function mouseMoved() {
-  if (whatthefuck) (video.elt.volume = 1, video.elt.loop = true, video.elt.play())
 }
