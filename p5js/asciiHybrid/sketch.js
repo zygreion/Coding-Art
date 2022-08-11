@@ -95,23 +95,23 @@ function draw() {
     counter++;
   }
   
-  if (type === 'image') return;
-  let allow = 0;
-  (samePixels === video.width * video.height) ? allow++ : allow--;
-  (video.elt.paused && !isStopped) ? allow++ : allow--;
-  switch (allow) {
-    case 2:
-      isStopped = true;
-      asciiCanvas.style.opacity = 0.4;
-      dcDiv.style.opacity = 1;
-      break;
-    case -2:
-      if (!isStopped) return;
-      isStopped = false;
-      asciiCanvas.style.opacity = 1;
-      dcDiv.style.opacity = 0;
-      break;
-  }
+  // if (type === 'image') return;
+  // let allow = 0;
+  // (samePixels === video.width * video.height) ? allow++ : allow--;
+  // (video.elt.paused && !isStopped) ? allow++ : allow--;
+  // switch (allow) {
+  //   case 2:
+  //     isStopped = true;
+  //     asciiCanvas.style.opacity = 0.4;
+  //     dcDiv.style.opacity = 1;
+  //     break;
+  //   case -2:
+  //     if (!isStopped) return;
+  //     isStopped = false;
+  //     asciiCanvas.style.opacity = 1;
+  //     dcDiv.style.opacity = 0;
+  //     break;
+  // }
 }
 
 function inputLoad(param) {
