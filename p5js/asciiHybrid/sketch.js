@@ -115,7 +115,6 @@ function draw() {
 }
 
 function inputLoad(param) {
-  if (video) video.volume(0);
   let t; 
   t = (param === 'camera') ? param : t = param.type.slice(0, 5);
   
@@ -176,6 +175,6 @@ function changeFontSize() {
   asciiCanvas.style.fontSize = 16 * int(widthSlider.value)/1320 * 100/int(densitySlider.value) + 'px';
 }
 
-function mouseMoved() {
+function mouseClicked() {
   if (video && video.volume() === 0) video.volume(1);
 }
