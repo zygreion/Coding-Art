@@ -176,5 +176,5 @@ function changeFontSize() {
 }
 
 function mouseMoved() {
-  if (video.elt.paused && video.volume() === 0) (video.volume(1), video.play());
+  if (video.elt.paused && video.volume() === 0) (video.elt.volume(1), video.elt.play());
 }
