@@ -140,7 +140,7 @@ function initialize() {
   counter = 0;
   
   if (type === 'video' || type === 'camera') 
-    (video.hide(), video.volume(0), video.play(), video.loop())
+    (video.hide(), video.volume(0), video.loop())
   init_vw = video.width; init_vh = video.height;
   changeWidth(); changeDensity();
   initializeEnd = true;
@@ -175,6 +175,6 @@ function changeFontSize() {
   asciiCanvas.style.fontSize = 16 * int(widthSlider.value)/1320 * 100/int(densitySlider.value) + 'px';
 }
 
-function mouseClicked() {
-  if (video && video.volume() === 0) video.volume(1);
+function mouseMoved() {
+  if (video.elt.paused && video.volume() === 0) (video.volume(1), video.play());
 }
