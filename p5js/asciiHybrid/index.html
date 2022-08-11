@@ -9,13 +9,13 @@
 
   </head>
   <body>
-    <div class="wrapper">
+    <div id="wrapper">
       <div id="asciiCanvas">
       </div>
       <div id="dcDiv">Video Paused</div>
     </div>
     
-    <div class="wrapper2">
+    <div id="customization">
       <input class="" type="file" accept="video/*" id="fileInput" onchange="if (this.files.length >= 1) inputLoad(this.files[0])">
       
       <br><br>
@@ -37,11 +37,17 @@
       <div>
         <div style="display: inline-block;">
           <span>Walk</span><br>
-          <input type="checkbox" onchange="walk=!walk" style="margin-left: 12px;">
+          <input type="checkbox" onchange="walk=!walk" style="margin-left: 35%;">
         </div>
-        <div style="display: inline-block;">
+        
+        <div style="display: inline-block; position: absolute; left: 50%; transform: translate(-50%, 0);">
           <span>Colorize</span><br>
-          <input type="checkbox" onchange="colorize=!colorize" style="margin-left: 30px;">
+          <input type="checkbox" onchange="colorize=!colorize;" style="margin-left: 40%;">
+        </div>
+        
+        <div style="display: inline-block; position: absolute; right: 0%; transform: translate(-50%, 0);">
+          <span>Full</span><br>
+          <input type="checkbox" id="fullscreenCheckbox" onchange="fullscreen(!fullscreen());" style="margin-left: 42%;">
         </div>
       </div>
       
@@ -53,9 +59,9 @@
       <input type="radio" name="cameraMode" onclick="cameraMode=true">
       <label for="html">Front</label>
     </div>
+    <div id="videoDisplay"></div>
     <main>
     </main>
     <script src="sketch.js"></script>
-    <div id="videoDisplay" style="display: flex; position: absolute; left:  0; bottom: 0; z-index: 1;"></div>
   </body>
 </html>

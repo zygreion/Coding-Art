@@ -7,10 +7,10 @@ html, body {
   overflow: hidden;
 }
 
-.wrapper {
+#wrapper {
   position: relative;
   display: inline-block;
-/*   background-color: #333; */
+  overflow: hidden;
   color: #fff;
 }
 
@@ -18,7 +18,6 @@ html, body {
   opacity: 1;
   line-height: 0.85em;
   letter-spacing: 0.24em;
-  text-align: center;
 /*   padding: 4px; */
   transition: opacity 0.5s ease-in-out;
 }
@@ -48,9 +47,13 @@ html, body {
 }
 
 #videoDisplay {
+  display: flex;
+  position: absolute;
+  bottom: 0;
+  z-index: 1;
 }
 
-.wrapper2 {
+#customization {
   position: absolute;
   bottom: 0;
   right: 0;
@@ -60,17 +63,10 @@ html, body {
   background-color: #000;
 }
 
-.wrapper2 > span {
+#customization > span {
   display: block;
 }
 
-.wrapper2 > div > span {
-/*   display: block; */
+#fileInput {
+  width: 200px;
 }
-
-/* #fileInput::file-selector-button {
-  background-image: linear-gradient(0deg, #707070 -50%, #FCFCFC 110.00000000000001%);
-}
-#fileInput::file-selector-button:hover {
-  background-image: linear-gradient(0deg, #555555 -50%, #FCFCFC 110.00000000000001%);
-} */
