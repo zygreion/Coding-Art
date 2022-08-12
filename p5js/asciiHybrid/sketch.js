@@ -18,7 +18,7 @@ function preload() {
   
   densitySlider.value = '100';
   widthSlider.value = window.innerWidth * 3/4;
-  widthSlider.max = window.outerWidth * (1-1/10);
+  widthSlider.max = window.outerWidth;
 }
 
 function draw() {  
