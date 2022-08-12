@@ -46,12 +46,17 @@ html, body {
   background-color: lime;
 }
 
-#videoDisplay {
-  display: flex;
+.videoDisplay {
   position: absolute;
   left: 0;
   bottom: 0;
+  height: 56px;
+  width: auto;
   z-index: 1;
+}
+
+.isCamera {
+  transform: rotateY(180deg);
 }
 
 #customization {
