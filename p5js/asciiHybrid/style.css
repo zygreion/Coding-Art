@@ -54,6 +54,7 @@ html, body {
   height: 56px;
   width: auto;
   z-index: 1;
+  overflow: hidden;
 }
 
 .isCamera {
