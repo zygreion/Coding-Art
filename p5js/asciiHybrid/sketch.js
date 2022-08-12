@@ -1,6 +1,6 @@
 let chars = 'Ñ@#W$9876543210?!abc;:+=-,._                    ';
 let counter = 0;
-let init_vw, init_vh, output_vw, output_vh;
+let output_vw, output_vh;
 
 // Customization
 let walk = false;
@@ -25,7 +25,7 @@ function draw() {
   if (!video) return;
   if (type !== 'image' && !video.loadedmetadata) return;
   
-  gfx = video.get(0,0, init_vw, init_vh);
+  gfx = video.get(0,0, video.width, video.height);
   gfx.resize(output_vw, output_vh);
   
   // if (type === 'image') c.drawingContext.drawImage(vidRef, 0, 0, c.width, c.height);
@@ -103,7 +103,6 @@ function initialize() {
     ((whack) ? video.elt.volume = 0 : video.elt.volume = 1, video.elt.loop = true, video.elt.play());
   video.elt.classList.add('videoDisplay');
   if (type === 'camera') video.elt.classList.add('isCamera');
-  init_vw = video.width; init_vh = video.height;
   changeFontSize(); changeDensity(); 
   
   if (type === 'camera') {
