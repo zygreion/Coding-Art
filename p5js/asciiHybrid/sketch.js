@@ -100,12 +100,9 @@ function initialize() {
   counter = 0;
   
   if (type === 'video' || type === 'camera') 
-    ((whack) ? video.elt.volume = 0 : video.elt.volume = 1, video.elt.loop = true, video.elt.play())
-  video.elt.style.position = 'absolute';
-  video.elt.style.left = '0px';
-  video.elt.style.bottom = '0px';
-  video.elt.style.width = 'auto';
-  video.elt.style.height = '56px';
+    ((whack) ? video.elt.volume = 0 : video.elt.volume = 1, video.elt.loop = true, video.elt.play());
+  video.elt.classList.add('videoDisplay');
+  if (type === 'camera') video.elt.classList.add('isCamera');
   init_vw = video.width; init_vh = video.height;
   changeFontSize(); changeDensity(); 
   
