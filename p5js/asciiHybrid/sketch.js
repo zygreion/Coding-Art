@@ -118,7 +118,7 @@ function initialize() {
 
 function changeDensity() {
   let newW = int(densitySlider.value);
-  let newH = int(newW / init_vw * init_vh);
+  let newH = int(newW / video.width * video.height);
   output_vw = newW; output_vh = newH;
   changeFontSize();
 }
