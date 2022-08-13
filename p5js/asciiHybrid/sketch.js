@@ -10,7 +10,7 @@ let flipChars = false;
 
 let whack = true;
 
-let video, vidRef, type, lastAvg;
+let video, isStopped, type, lastAvg;
 
 function preload() {
   type = 'video';
@@ -25,56 +25,64 @@ function draw() {
   if (!video) return;
   if (type !== 'image' && !video.loadedmetadata) return;
   
-  gfx = video.get(0,0, video.width, video.height);
-  gfx.resize(output_vw, output_vh);
-  
-  // if (type === 'image') c.drawingContext.drawImage(vidRef, 0, 0, c.width, c.height);
-  
-  gfx.loadPixels();
-  let samePixels = 0;
-  
-  let asciiImage = '';
-  for (let y = 0; y < gfx.height; y++) {
-    lastAvg = -1;
-    for (let x = 
-         (!cameraMode) ? 0 : gfx.width-1; 
-         (!cameraMode) ? x < gfx.width : x >= 0; 
-         (!cameraMode) ? x++ : x--) {
-      const pixIndex = (x + y * gfx.width) * 4;
-      const r = gfx.pixels[pixIndex];
-      const g = gfx.pixels[pixIndex+1];
-      const b = gfx.pixels[pixIndex+2];
-      
-      const avg = (r+g+b) / 3;
-      const charIndex = map(avg, 0, 255, 
-                            (!flipChars) ? chars.length-1 : 0, 
-                            (!flipChars) ? 0 : chars.length-1);
-      let c = chars.charAt((!walk) ? charIndex : int(charIndex + counter/6) % chars.length);
-      if (c === ' ') (c = (!colorize) ? '&nbsp' : "^");
-      if (colorize) {
-        if (avg <= 3) c = '&nbsp';
-        if (lastAvg !== avg) {
-          if (x > 0) asciiImage += '</span>';
-          if (avg > 3) asciiImage += `<span style="color: rgb(${r},${g},${b})">`;
-          else asciiImage += '<span>';
-        }
-      }
-      asciiImage += c;
-      
-      lastAvg = avg;
+  if (!isStopped) {
+    if (type !== 'image') {
+      gfx = video.get(0,0, video.width, video.height);
+      gfx.resize(output_vw, output_vh);
+    } else {
+      gfx = createGraphics(output_vw, output_vh);
+      gfx.drawingContext.drawImage(video, 0,0, gfx.width,gfx.height);
     }
-    asciiImage += '<br>';
+
+
+    gfx.loadPixels();
+    let samePixels = 0;
+
+    let asciiImage = '';
+    for (let y = 0; y < gfx.height; y++) {
+      lastAvg = -1;
+      for (let x = 
+           (!cameraMode) ? 0 : gfx.width-1; 
+           (!cameraMode) ? x < gfx.width : x >= 0; 
+           (!cameraMode) ? x++ : x--) {
+        const pixIndex = (x + y * gfx.width) * 4;
+        const r = gfx.pixels[pixIndex];
+        const g = gfx.pixels[pixIndex+1];
+        const b = gfx.pixels[pixIndex+2];
+
+        const avg = (r+g+b) / 3;
+        const charIndex = map(avg, 0, 255, 
+                              (!flipChars) ? chars.length-1 : 0, 
+                              (!flipChars) ? 0 : chars.length-1);
+        let c = chars.charAt((!walkCheckbox.checked) ? charIndex : int(charIndex + counter/6) % chars.length);
+        if (c === ' ') (c = (!colorize) ? '&nbsp' : "^");
+        if (colorize) {
+          if (avg <= 3) c = '&nbsp';
+          if (lastAvg !== avg) {
+            if (x > 0) asciiImage += '</span>';
+            if (avg > 3) asciiImage += `<span style="color: rgb(${r},${g},${b})">`;
+            else asciiImage += '<span>';
+          }
+        }
+        asciiImage += c;
+
+        lastAvg = avg;
+      }
+      asciiImage += '<br>';
+    }
+  
+    if (colorize && asciiCanvas.style.color === '#fff') asciiCanvas.style.color = '#000';
+    if (!colorize && asciiCanvas.style.color === '#000') asciiCanvas.style.color = '#fff';
+    asciiCanvas.innerHTML = asciiImage; 
   }
   
-  if (colorize && asciiCanvas.style.color === '#fff') asciiCanvas.style.color = '#000';
-  if (!colorize && asciiCanvas.style.color === '#000') asciiCanvas.style.color = '#fff';
-  asciiCanvas.innerHTML = asciiImage; 
-  if (video.elt.paused) return;
-  counter++;
+  if (type !== 'image' && video.elt.paused) isStopped = true;
+  if (type === 'image' && !walkCheckbox.checked) isStopped = true;
+  if (!isStopped) counter = (counter + 1) % (chars.length * 6);
 }
 
 function inputLoad(param) {
-  let videos = document.getElementsByTagName('video');
+  let videos = (type !== 'image') ? document.getElementsByTagName('video') : document.getElementsByTagName('IMG');
   if (videos.length > 0) videos[0].remove();
   let t;
   t = (param === 'camera') ? param : t = param.type.slice(0, 5);
@@ -84,31 +92,39 @@ function inputLoad(param) {
   let lastType = type;
   type = t; 
   
-  let blob = (type !== 'camera') ? URL.createObjectURL(param) : (0);
+  blob = (type !== 'camera') ? URL.createObjectURL(param) : (0);
 
   if (type === 'camera') {
     if (lastType === type) return;
     fileInput.value = '';
     video = createCapture(VIDEO, initialize);
-  } else if (type === 'video' || type === 'image') {
+  } else {
     if (type === 'video') video = createVideo(blob, initialize)
+    else if (type === 'image') {
+      video = new Image(); 
+      video.onload = (event) => {
+        initialize();
+      };
+      video.src = blob;
+    }
   }
 }
 
 function initialize() {
   initializeEnd = false;
   counter = 0;
+  isStopped = false;
   
   if (type === 'video' || type === 'camera') 
-    ((whack) ? video.elt.volume = 0 : video.elt.volume = 1, video.elt.loop = true, video.elt.play());
-  video.elt.classList.add('videoDisplay');
+    (video.elt.classList.add('videoDisplay'), (whack) ? video.elt.volume = 0 : video.elt.volume = 1, video.elt.onplay = (event) => {if (isStopped) isStopped = false;}, video.elt.loop = true, video.elt.play());
   if (type === 'camera') video.elt.classList.add('isCamera');
+  if (type === 'image') (video.classList.add('videoDisplay'), document.body.appendChild(video))
   changeFontSize(); changeDensity(); 
   
   if (type === 'camera') {
     fileInput.classList.remove('fileInputActive');
     webcamButton.classList.add('webcamButtonActive');
-  } else if (type === 'video' || type === 'image') {
+  } else {
     webcamButton.classList.remove('webcamButtonActive');
     fileInput.classList.add('fileInputActive');
   }
@@ -118,13 +134,20 @@ function initialize() {
 
 function changeDensity() {
   let newW = int(densitySlider.value);
-  let newH = int(newW / video.width * video.height);
+  let newH = (type !== 'image') ? int(newW / video.width * video.height) : int(newW / video.naturalWidth * video.naturalHeight);
   output_vw = newW; output_vh = newH;
   changeFontSize();
 }
 
 function changeWidth() {
   changeFontSize();
+}
+
+function switchStopped() {
+  if (type === 'image' && video.complete) 
+    isStopped = false;
+  else if (type === 'camera' || type === 'video' && video.elt.paused && video.elt.readyState === 4)
+    isStopped = false;
 }
 
 function changeFontSize() {
