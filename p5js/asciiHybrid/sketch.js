@@ -59,6 +59,7 @@ function draw() {
         }
         
         asciiImage += c;
+        if (x === chars.length-1) asciiImage += '</span>';
         lastAvg = avg;
       }
       asciiImage += '<br>';
