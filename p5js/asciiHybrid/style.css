@@ -16,10 +16,11 @@ html, body {
 
 #asciiCanvas {
   opacity: 1;
-  line-height: 0.85em;
+  line-height: 0.845em;
   letter-spacing: 0.24em;
 /*   padding: 4px; */
   transition: opacity 0.5s ease-in-out;
+  overflow: hidden;
 }
 
 #dcDiv {
@@ -46,12 +47,18 @@ html, body {
   background-color: lime;
 }
 
-#videoDisplay {
-  display: flex;
+.videoDisplay {
   position: absolute;
   left: 0;
   bottom: 0;
+  height: 56px;
+  width: auto;
   z-index: 1;
+  overflow: hidden;
+}
+
+.isCamera {
+  transform: rotateY(180deg);
 }
 
 #customization {

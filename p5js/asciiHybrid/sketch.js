@@ -1,6 +1,5 @@
-let chars = 'Ñ@#W$9876543210?!abc;:+=-,._                    ';
+const chars = 'Ñ@#W$9876543210?!abc;:+=-,._                    ';
 let counter = 0;
-let init_vw, init_vh, output_vw, output_vh;
 
 // Customization
 let walk = false;
@@ -10,127 +9,134 @@ let flipChars = false;
 
 let whack = true;
 
-let video, vidRef, type, lastAvg;
+let video, isStopped, type, lastAvg;
 
 function preload() {
-  type = 'video';
-  video = createVideo('bird.mp4', initialize);
-  
+  (type = 'video', video = createVideo('bird.mp4', initialize));
   densitySlider.value = '100';
   widthSlider.value = window.innerWidth * 3/4;
-  widthSlider.max = window.outerWidth-40;
+  widthSlider.value = '960';
+  widthSlider.max = window.outerWidth;
 }
 
 function draw() {  
   if (!video) return;
-  if (type !== 'image' && !video.loadedmetadata) return;
+  if (
+    (type === 'image' && !video.complete) || 
+    ((type === 'camera' || type === 'video') && video.elt.readyState !== 4)
+  ) return;
   
-  gfx = video.get(0,0, init_vw, init_vh);
-  gfx.resize(output_vw, output_vh);
-  
-  // if (type === 'image') c.drawingContext.drawImage(vidRef, 0, 0, c.width, c.height);
-  
-  gfx.loadPixels();
-  let samePixels = 0;
-  
-  let asciiImage = '';
-  for (let y = 0; y < gfx.height; y++) {
-    lastAvg = -1;
-    for (let x = 
-         (!cameraMode) ? 0 : gfx.width-1; 
-         (!cameraMode) ? x < gfx.width : x >= 0; 
-         (!cameraMode) ? x++ : x--) {
-      const pixIndex = (x + y * gfx.width) * 4;
-      const r = gfx.pixels[pixIndex];
-      const g = gfx.pixels[pixIndex+1];
-      const b = gfx.pixels[pixIndex+2];
-      
-      const avg = (r+g+b) / 3;
-      const charIndex = map(avg, 0, 255, 
-                            (!flipChars) ? chars.length-1 : 0, 
-                            (!flipChars) ? 0 : chars.length-1);
-      let c = chars.charAt((!walk) ? charIndex : int(charIndex + counter/6) % chars.length);
-      if (c === ' ') (c = (!colorize) ? '&nbsp' : "^");
-      if (colorize) {
-        if (avg <= 3) c = '&nbsp';
-        if (lastAvg !== avg) {
-          if (x > 0) asciiImage += '</span>';
-          if (avg > 3) asciiImage += `<span style="color: rgb(${r},${g},${b})">`;
-          else asciiImage += '<span>';
+  if (!isStopped) {
+    (type !== 'image') ? 
+      gfx.image(video, 0,0, gfx.width,gfx.height) :
+      gfx.drawingContext.drawImage(video, 0,0, gfx.width,gfx.height);
+
+    gfx.loadPixels();
+
+    let asciiImage = '';
+    for (let y = 0; y < gfx.height; y++) {
+      lastAvg = -1;
+      for (let x = 
+           (!cameraMode) ? 0 : gfx.width-1; 
+           (!cameraMode) ? x < gfx.width : x >= 0; 
+           (!cameraMode) ? x++ : x--) {
+        const pixIndex = (x + y * gfx.width) * 4;
+        const r = gfx.pixels[pixIndex];
+        const g = gfx.pixels[pixIndex+1];
+        const b = gfx.pixels[pixIndex+2];
+
+        const avg = (r+g+b) / 3;
+        const charIndex = map(avg, 0, 255, 
+                              (!flipChars) ? chars.length-1 : 0, 
+                              (!flipChars) ? 0 : chars.length-1);
+        let c = chars.charAt((!walkCheckbox.checked) ? charIndex : int(charIndex + counter/6) % chars.length);
+        if (c === ' ') (c = (!colorize) ? '&nbsp' : "^");
+        if (colorize) {
+          if (avg <= 3) c = '&nbsp';
+          if (lastAvg !== avg) {
+            if (x > 0) asciiImage += '</span>';
+            asciiImage += (avg > 3) ? `<span style="color: rgb(${r},${g},${b})">` : '<span>';
+          }
         }
+        
+        asciiImage += c;
+        lastAvg = avg;
       }
-      asciiImage += c;
-      
-      lastAvg = avg;
+      asciiImage += '<br>';
     }
-    asciiImage += '<br>';
+  
+    if (colorize && asciiCanvas.style.color === '#fff') asciiCanvas.style.color = '#000';
+    if (!colorize && asciiCanvas.style.color === '#000') asciiCanvas.style.color = '#fff';
+    asciiCanvas.innerHTML = asciiImage; 
   }
   
-  if (colorize && asciiCanvas.style.color === '#fff') asciiCanvas.style.color = '#000';
-  if (!colorize && asciiCanvas.style.color === '#000') asciiCanvas.style.color = '#fff';
-  asciiCanvas.innerHTML = asciiImage; 
-  if (video.elt.paused) return;
-  counter++;
+  if (type !== 'image' && video.elt.paused) isStopped = true;
+  if (type === 'image' && !walkCheckbox.checked) isStopped = true;
+  if (!isStopped) counter = (counter + 1) % (chars.length * 6);
 }
 
 function inputLoad(param) {
-  let videos = document.getElementsByTagName('video');
+  let videos = (type !== 'image') ? document.getElementsByTagName('VIDEO') : document.getElementsByTagName('IMG');
   if (videos.length > 0) videos[0].remove();
   let t;
   t = (param === 'camera') ? param : t = param.type.slice(0, 5);
   
   if (t === '') return;
   
-  let lastType = type;
-  type = t; 
-  
-  let blob = (type !== 'camera') ? URL.createObjectURL(param) : (0);
+  let blob, lastType = type; type = t; 
+  if (type !== 'camera') blob = URL.createObjectURL(param);
 
-  if (type === 'camera') {
-    if (lastType === type) return;
-    fileInput.value = '';
-    video = createCapture(VIDEO, initialize);
-  } else if (type === 'video' || type === 'image') {
-    if (type === 'video') video = createVideo(blob, initialize)
-  }
+  if (type === 'camera') (lastType === type) ? (0) : (fileInput.value = '', video = createCapture(VIDEO, initialize));
+  else if (type === 'video') video = createVideo(blob, initialize);
+  else if (type === 'image') (video = new Image(), video.addEventListener('load', initialize), video.src = blob);
 }
 
 function initialize() {
-  initializeEnd = false;
   counter = 0;
+  isStopped = false;
   
   if (type === 'video' || type === 'camera') 
-    ((whack) ? video.elt.volume = 0 : video.elt.volume = 1, video.elt.loop = true, video.elt.play())
-  video.elt.style.position = 'absolute';
-  video.elt.style.left = '0px';
-  video.elt.style.bottom = '0px';
-  video.elt.style.width = 'auto';
-  video.elt.style.height = '56px';
-  init_vw = video.width; init_vh = video.height;
-  changeFontSize(); changeDensity(); 
+    (video.elt.classList.add('videoDisplay'), 
+    (whack) ? video.elt.volume = 0 : video.elt.volume = 1, 
+    video.elt.addEventListener('play', () => isStopped && (isStopped = false), 
+    video.elt.loop = true, video.elt.play()));
+  changeFontSize(); changeDensity(densitySlider.value); 
   
-  if (type === 'camera') {
-    fileInput.classList.remove('fileInputActive');
-    webcamButton.classList.add('webcamButtonActive');
-  } else if (type === 'video' || type === 'image') {
-    webcamButton.classList.remove('webcamButtonActive');
-    fileInput.classList.add('fileInputActive');
-  }
+  (type === 'camera') ? 
+    (video.elt.classList.add('isCamera'),
+    fileInput.classList.remove('fileInputActive'),
+    webcamButton.classList.add('webcamButtonActive')) 
+  : 
+    ((type === 'image') && (video.classList.add('videoDisplay'), document.body.appendChild(video)),
+    webcamButton.classList.remove('webcamButtonActive'),
+    fileInput.classList.add('fileInputActive'));
   
   if (whack) whack = false;
 }
 
-function changeDensity() {
-  let newW = int(densitySlider.value);
-  let newH = int(newW / init_vw * init_vh);
-  output_vw = newW; output_vh = newH;
+function changeDensity(newW) {
+  gfx = createGraphics(
+    int(newW), 
+    (type !== 'image') ? 
+      int(newW / video.width * video.height) 
+    : 
+      int(newW / video.naturalWidth * video.naturalHeight));
   changeFontSize();
 }
 
-function changeWidth() {
-  changeFontSize();
+function changeWidth() {  changeFontSize(); }
+
+function switchStopped() {
+  if (
+    (type === 'image' && video.complete) || 
+    (type === 'camera' || type === 'video' && video.elt.paused && video.elt.readyState === 4)
+  ) 
+    isStopped = false;
 }
 
 function changeFontSize() {
-  asciiCanvas.style.fontSize = 16 * 100/int(densitySlider.value) * int(widthSlider.value)/1320 + 'px';
+  asciiCanvas.style.fontSize = 16 * 100/int(densitySlider.value) * int(widthSlider.value)/1344 + 'px';
 }
+
+function mousePressed() {  if (whack) (type = 'video', video = createVideo('bird.mp4', initialize)); }
+function touchStarted() {  if (whack) (type = 'video', video = createVideo('bird.mp4', initialize)); }

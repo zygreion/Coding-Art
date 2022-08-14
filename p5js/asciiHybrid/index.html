@@ -16,7 +16,7 @@
     </div>
     
     <div id="customization">
-      <input class="" type="file" accept="video/*" id="fileInput" onchange="if (this.files.length >= 1) inputLoad(this.files[0])">
+      <input class="" type="file" accept="video/*, image/*" id="fileInput" onchange="if (this.files.length >= 1) inputLoad(this.files[0])">
       
       <br><br>
       
@@ -25,29 +25,29 @@
       <br><br>
       
       <span>Density</span>
-      <input type="range" min="10" max="220" value="100" step="1" id="densitySlider" oninput="changeDensity();">
+      <input type="range" min="10" max="220" value="100" step="1" id="densitySlider" oninput="changeDensity(this.value); switchStopped();">
       
       <br><br>      
       
       <span>Output Width</span>
-      <input type="range" min="10" max="1920" value="100" step="1" id="widthSlider" oninput="changeWidth()">
+      <input type="range" min="10" max="1920" value="100" step="1" id="widthSlider" oninput="changeWidth(); switchStopped();">
       
       <br><br>
       
       <div>
         <div style="display: inline-block;">
           <span>Walk</span><br>
-          <input type="checkbox" onchange="walk=!walk" style="margin-left: 35%;">
+          <input type="checkbox" id="walkCheckbox" onchange="switchStopped();" style="margin-left: 35%;">
         </div>
         
         <div style="display: inline-block; margin-left: 10px;">
           <span>Colorize</span><br>
-          <input type="checkbox" onchange="colorize=!colorize;" style="margin-left: 40%;">
+          <input type="checkbox" onchange="colorize=!colorize; switchStopped();" style="margin-left: 40%;">
         </div>
 
         <div style="display: inline-block; margin-left: 10px;">
           <span>Flip</span><br>
-          <input type="checkbox" onchange="flipChars=!flipChars;" style="margin-left: 40%;">
+          <input type="checkbox" onchange="flipChars=!flipChars; switchStopped();" style="margin-left: 40%;">
         </div>
 
       </div>
@@ -55,9 +55,9 @@
       <br>
       
       <span>Camera Mode</span>
-      <input type="radio" name="cameraMode" onclick="cameraMode=false" checked>
+      <input type="radio" name="cameraMode" onchange="cameraMode=false; switchStopped();" checked>
       <label for="html">Back</label>
-      <input type="radio" name="cameraMode" onclick="cameraMode=true">
+      <input type="radio" name="cameraMode" onchange="cameraMode=true; switchStopped();">
       <label for="html">Front</label>
     </div>
     <main>
