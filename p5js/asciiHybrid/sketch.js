@@ -15,7 +15,6 @@ function preload() {
   (type = 'video', video = createVideo('bird.mp4', initialize));
   densitySlider.value = '100';
   widthSlider.value = window.innerWidth * 3/4;
-  widthSlider.value = '960';
   widthSlider.max = window.outerWidth;
 }
 
@@ -136,6 +135,10 @@ function switchStopped() {
 
 function changeFontSize() {
   asciiCanvas.style.fontSize = 16 * 100/int(densitySlider.value) * int(widthSlider.value)/1344 + 'px';
+}
+
+function dropHandler(event) {
+  console.log(event);
 }
 
 function mousePressed() {  if (whack) (type = 'video', video = createVideo('bird.mp4', initialize)); }
