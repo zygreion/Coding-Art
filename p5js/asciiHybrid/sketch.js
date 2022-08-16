@@ -11,11 +11,10 @@ let whack = true;
 
 let video, isStopped, type, lastAvg;
 
-function preload() {
+function setup() {
   (type = 'video', video = createVideo('bird.mp4', initialize));
-  densitySlider.value = '100';
+  densitySlider.value = '40';
   widthSlider.value = window.innerWidth * 3/4;
-  widthSlider.value = '960';
   widthSlider.max = window.outerWidth;
 }
 
@@ -28,22 +27,22 @@ function draw() {
   
   if (!isStopped) {
     (type !== 'image') ? 
-      gfx.image(video, 0,0, gfx.width,gfx.height) :
-      gfx.drawingContext.drawImage(video, 0,0, gfx.width,gfx.height);
+      image(video, 0,0, width,height) :
+      drawingContext.drawImage(video, 0,0, width,height);
 
-    gfx.loadPixels();
+    loadPixels();
 
     let asciiImage = '';
-    for (let y = 0; y < gfx.height; y++) {
+    for (let y = 0; y < height; y++) {
       lastAvg = -1;
       for (let x = 
-           (!cameraMode) ? 0 : gfx.width-1; 
-           (!cameraMode) ? x < gfx.width : x >= 0; 
+           (!cameraMode) ? 0 : width-1; 
+           (!cameraMode) ? x < width : x >= 0; 
            (!cameraMode) ? x++ : x--) {
-        const pixIndex = (x + y * gfx.width) * 4;
-        const r = gfx.pixels[pixIndex];
-        const g = gfx.pixels[pixIndex+1];
-        const b = gfx.pixels[pixIndex+2];
+        const pixIndex = (x + y * width) * 4;
+        const r = pixels[pixIndex];
+        const g = pixels[pixIndex+1];
+        const b = pixels[pixIndex+2];
 
         const avg = (r+g+b) / 3;
         const charIndex = map(avg, 0, 255, 
@@ -60,6 +59,7 @@ function draw() {
         }
         
         asciiImage += c;
+        if (colorize && x === width-1) asciiImage += '</span>';
         lastAvg = avg;
       }
       asciiImage += '<br>';
@@ -115,12 +115,11 @@ function initialize() {
 }
 
 function changeDensity(newW) {
-  gfx = createGraphics(
-    int(newW), 
-    (type !== 'image') ? 
-      int(newW / video.width * video.height) 
-    : 
-      int(newW / video.naturalWidth * video.naturalHeight));
+  newW = int(newW);
+  let newH = int((type !== 'image') ? 
+              newW / video.width * video.height : 
+              newW / video.naturalWidth * video.naturalHeight);
+  (typeof(canvas) === 'undefined') ? (createCanvas(newW, newH)) : resizeCanvas(newW, newH);
   changeFontSize();
 }
 
@@ -135,7 +134,7 @@ function switchStopped() {
 }
 
 function changeFontSize() {
-  asciiCanvas.style.fontSize = 16 * 100/int(densitySlider.value) * int(widthSlider.value)/1344 + 'px';
+  asciiCanvas.style.fontSize = 16 * 100/int(densitySlider.value) * int(widthSlider.value)/1320 + 'px';
 }
 
 function mousePressed() {  if (whack) (type = 'video', video = createVideo('bird.mp4', initialize)); }
