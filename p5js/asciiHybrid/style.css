@@ -3,25 +3,24 @@ html, body {
   padding: 0;
   font-family: 'Courier';
   color: #fff;
-  background-color: #000;
   overflow: hidden;
 }
 
-#wrapper {
-  position: relative;
-  display: inline-block;
-  overflow: hidden;
-  color: #fff;
-}
+html { background-color: #000;}
+
+canvas { display: none; }
 
 #asciiCanvas {
   opacity: 1;
   line-height: 0.845em;
   letter-spacing: 0.24em;
-/*   padding: 4px; */
+  padding: 4px;
   transition: opacity 0.5s ease-in-out;
-  overflow: hidden;
+  inline-size: max-content; /* this is important to fix the word-breaking issue */
+  color: #fff;
 }
+
+#asciiCanvas > span { display: inline-block; }
 
 #dcDiv {
   opacity: 0;
@@ -39,13 +38,9 @@ html, body {
   transition: opacity 0.5s ease-in 0.25s, opacity 0.5s ease-out 1s;
 }
 
-.fileInputActive {
-  color: lime;
-}
+.fileInputActive { color: lime; }
 
-.webcamButtonActive {
-  background-color: lime;
-}
+.webcamButtonActive { background-color: lime; }
 
 .videoDisplay {
   position: absolute;
@@ -57,9 +52,7 @@ html, body {
   overflow: hidden;
 }
 
-.isCamera {
-  transform: rotateY(180deg);
-}
+.isCamera { transform: rotateY(180deg); }
 
 #customization {
   position: absolute;
@@ -71,10 +64,6 @@ html, body {
   background-color: #000;
 }
 
-#customization > span {
-  display: block;
-}
+#customization > span { display: block; }
 
-#fileInput {
-  width: 200px;
-}
+#fileInput { width: 200px; }
