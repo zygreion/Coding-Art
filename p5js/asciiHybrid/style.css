@@ -8,16 +8,25 @@ html, body {
 
 html { background-color: #000;}
 
-canvas { display: none; }
+canvas.p5Canvas { display: none; }
+
+#mao {
+  position: absolute;
+  width: 100vw;
+  height: 100vh;
+  z-index: -1;
+}
 
 #asciiCanvas {
   opacity: 1;
+/*   padding: 4px; */
+  width: max-content;
   line-height: 0.845em;
   letter-spacing: 0.24em;
-  padding: 4px;
-  transition: opacity 0.5s ease-in-out;
-  inline-size: max-content; /* this is important to fix the word-breaking issue */
   color: #fff;
+  inline-size: max-content; /* this is important to fix the word-breaking issue */
+  word-break: keep-all;
+  transition: opacity 0.5s ease-in-out;
 }
 
 #asciiCanvas > span { display: inline-block; }
@@ -66,4 +75,7 @@ canvas { display: none; }
 
 #customization > span { display: block; }
 
-#fileInput { width: 200px; }
+#fileInput { 
+  width: 200px; 
+  color: lime;
+}
