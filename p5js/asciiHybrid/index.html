@@ -9,11 +9,12 @@
 
   </head>
   <body>
+    <div id="mao" ondblclick="fullscreen(!fullscreen())"></div>
     <div id="asciiCanvas"></div>
     <div id="dcDiv">Video Paused</div>
     
     <div id="customization">
-      <input class="" type="file" accept="video/*, image/*" id="fileInput" onchange="if (this.files.length >= 1) inputLoad(this.files[0])">
+      <input class="" type="file" accept="" id="fileInput" onchange="(this.files.length >= 1) && inputLoad(this.files[0]);">
       
       <br><br>
       
@@ -27,7 +28,7 @@
       <br><br>      
       
       <span>Output Width</span>
-      <input type="range" min="10" max="1920" value="100" step="1" id="widthSlider" oninput="changeWidth(); switchStopped();">
+      <input type="range" min="20" max="1920" value="100" step="1" id="widthSlider" oninput="changeWidth(this.value); switchStopped();">
       
       <br><br>
       
@@ -57,8 +58,8 @@
       <input type="radio" name="cameraMode" onchange="cameraMode=true; switchStopped();">
       <label for="html">Front</label>
     </div>
-    <main>
-    </main>
+    
     <script src="sketch.js"></script>
+    <script src="displayHandler.js"></script>
   </body>
 </html>
