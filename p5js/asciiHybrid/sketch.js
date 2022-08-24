@@ -1,5 +1,5 @@
 const acceptedFormats = `
-  .png, .jpg, .webp, .svg, .gif,
+  .png, .jpg, .jpeg, .webp, .svg, .gif,
   .mp4, .webm, .bmp, .3gp, .av1, .mov`;
 document.getElementById("fileInput").accept = acceptedFormats;
 
@@ -22,19 +22,20 @@ let counter = 0;
 // This variable will be false after the first successful video loaded
 let whack = true;
 
-let video, fileFormat, isStopped, type, lastAvg;
+let method = grayscale_yuv;
+let video, fileFormat, isStopped, type, lastGrayValue;
 
 function setup() {
-  (type = 'video', video = createVideo('bird.mp4', initialize));
+  firstTimer();
   (min(screen.width, screen.height) < 400) ? 
-    (densitySlider.max = '80', densitySlider.value = '20') : 
+    (densitySlider.max = '60', densitySlider.value = '20') : 
     (densitySlider.value = '40');
   widthSlider.value = window.innerWidth * 3/4;
   widthSlider.max = window.outerWidth;
   pixelDensity(1);
 }
 
-function draw() {  
+function draw() {
   if (!video) return;
   if (
     (type === 'image' && fileFormat !== '.gif' && !video.complete) || 
@@ -47,7 +48,7 @@ function draw() {
 
     let asciiImage = (!colorize) ? '<span>' : '';
     for (let y = 0; y < height; y++) {
-      lastAvg = -1;
+      lastGrayValue = -1;
       for (let x = 
            (!cameraMode) ? 0 : width-1; 
            (!cameraMode) ? x < width : x >= 0; 
@@ -60,11 +61,11 @@ function draw() {
         const b = pixels[pixIndex+2];
 
         // Current rgb to grayscale conversion use the average method
-        const avg = (r+g+b) / 3;
+        const grayValue = method(r, g, b);
         
         const charIndex = (!flipChars) ?
-          map(avg, 0, 255, chars.length-1, 0) :
-          map(avg, 0, 255, 0, chars.length-1);
+          map(grayValue, 0, 255, chars.length-1, 0) :
+          map(grayValue, 0, 255, 0, chars.length-1);
         
         let c = (!walkCheckbox.checked) ?
           chars.charAt(charIndex) :
@@ -75,22 +76,23 @@ function draw() {
         // Create <span> with specific color at the cost of performance
         // It will lag especially when the density value is high. Output width doesn't affect that much
         if (colorize) {
-          if (avg <= 3) c = '&nbsp';
-          if (lastAvg !== avg) {
-            if (x > 0) asciiImage += '</span>';
-            asciiImage += (avg > 3) ? 
-              `<span style="color: rgb(${r},${g},${b})">` : 
-              '<span>';
+          if (lastGrayValue !== grayValue) {
+            if (lastGrayValue !== -1) asciiImage += '</span>';
+            asciiImage += 
+              `<span style="color: rgb(${r},${g},${b})">` 
           }
         }
         
         asciiImage += c;
-        if (colorize && x === width-1) asciiImage += '</span>';
-        lastAvg = avg;
+        if (colorize) {
+          if (!cameraMode && x === width-1) asciiImage += '</span>';
+          else if (cameraMode && x === 0) asciiImage += '</span>';
+        }
+        lastGrayValue = grayValue;
       }
       asciiImage += '<br>';
     }
-  
+    
     // If colorize is true, the default text-color will be black.
     // It will save spaces rather than create so many span with black color which is pointless,
     // since the background color is also black.
@@ -105,6 +107,16 @@ function draw() {
   if (!isStopped) counter = (counter + 1) % (chars.length * 6);
 }
 
+function grayscale_yuv(R, G, B) {
+  const Y = 0.2126*R + 0.7152*G + 0.0722*B;
+  return Y;
+}
+
+function grayscale_average(R, G, B) {
+  const avg = (R+G+B)/3;
+  return avg;
+}
+
 function inputLoad(param) {
   let t = '', tempFileFormat;
   if (param === 'camera') t = param;
@@ -113,7 +125,7 @@ function inputLoad(param) {
     tempFileFormat = getFileFormat(param.name.toLowerCase());
     if (!acceptedFormats.includes(tempFileFormat)) return;
   }
-  if (t === '') return;
+  if (t === '' ) return;
   
   // Remove all elements that has class "videoDisplay" so there will be no duplicate of it
   let videos = document.getElementsByClassName('videoDisplay');
@@ -121,9 +133,20 @@ function inputLoad(param) {
   
   let blob,  // the source of video or image 
       lastType = type; type = t;
+  
   fileFormat = tempFileFormat;
-  if (type !== 'camera') blob = URL.createObjectURL(param);
+  if (type !== 'camera') {
+    blob = URL.createObjectURL(param);
 
+    // Change text beside choose file button as the file name
+    const endFirstSlice = 1 + 3 + fileFormat.length;
+    const startSecondSlice = param.name.length - fileFormat.length - 3;
+
+    inputButtonText.innerHTML = (param.name.length < 15) ?
+      param.name :
+      param.name.slice(0, endFirstSlice-1) + '…' + param.name.slice(startSecondSlice, param.name.length);
+  }
+    
   switch (type) {
     case 'camera':
       fileInput.value = ''; video = createCapture(VIDEO, initialize);
@@ -155,9 +178,11 @@ function initialize() {
     video.elt.loop = true, video.elt.play()));
   changeDensity(densitySlider.value); changeWidth(widthSlider.value);
   
+  if (whack) whack = false;
+  
   (type === 'camera') ? 
     (video.elt.classList.add('isCamera'),
-    fileInput.classList.remove('fileInputActive'),
+    inputButtonText.classList.remove('fileInputActive'),
     webcamButton.classList.add('webcamButtonActive')) 
   : 
     ((type === 'image') && 
@@ -165,9 +190,7 @@ function initialize() {
       (video.classList.add('videoDisplay'), document.body.appendChild(video)) :
       (video.canvas.classList.add('videoDisplay'), document.body.appendChild(video.canvas))),
     webcamButton.classList.remove('webcamButtonActive'),
-    fileInput.classList.add('fileInputActive'));
-  
-  if (whack) whack = false;
+    inputButtonText.classList.add('fileInputActive'));
 }
 
 function changeDensity(value) {
@@ -194,5 +217,9 @@ function changeFontSize() {
   asciiCanvas.style.fontSize = 16 * 100/int(density) * int(outputWidth)/1320 + 'px';
 }
 
-function mousePressed() {  if (whack) (type = 'video', video = createVideo('bird.mp4', initialize)); }
-function touchStarted() {  if (whack) (type = 'video', video = createVideo('bird.mp4', initialize)); }
+function firstTimer() {
+  if (whack) (type = 'video', video = createVideo('bird.mp4', initialize));
+}
+
+function mousePressed() {  firstTimer(); }
+function touchStarted() {  firstTimer(); }
