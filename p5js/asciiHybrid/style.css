@@ -14,7 +14,7 @@ canvas.p5Canvas { display: none; }
   position: absolute;
   width: 100vw;
   height: 100vh;
-  z-index: -1;
+  cursor: default;
 }
 
 #asciiCanvas {
@@ -47,15 +47,11 @@ canvas.p5Canvas { display: none; }
   transition: opacity 0.5s ease-in 0.25s, opacity 0.5s ease-out 1s;
 }
 
-.fileInputActive { color: lime; }
-
-.webcamButtonActive { background-color: lime; }
-
 .videoDisplay {
   position: absolute;
   left: 0;
   bottom: 0;
-  height: 56px;
+  height: calc(5.18vh);
   width: auto;
   z-index: 1;
   overflow: hidden;
@@ -71,11 +67,23 @@ canvas.p5Canvas { display: none; }
   transform: translate(-20%, -20%);
   border: 1px solid #333;
   background-color: #000;
+  transition: 0.25s linear;
+  z-index: 100;
 }
 
 #customization > span { display: block; }
 
-#fileInput { 
-  width: 200px; 
-  color: lime;
+#inputButtonText {
+  font-family: 'Arial';
+  margin-left: -5px;
+  font-size: 13px;
 }
+
+#fileInput { 
+  display: none;
+  color: transparent;
+/*   width: 87.14px;  */
+}
+#webcamButton, #inputButtonText { transition: 0.2s linear; }
+.fileInputActive { color: lime; }
+.webcamButtonActive { background-color: lime; }
